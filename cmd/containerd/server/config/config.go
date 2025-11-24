@@ -67,8 +67,6 @@ type Config struct {
 	TempDir string `toml:"temp"`
 	// Debug log settings
 	Debug Debug `toml:"debug"`
-	// Metrics and monitoring settings
-	Metrics MetricsConfig `toml:"metrics"`
 	// DisabledPlugins are IDs of plugins to disable. Disabled plugins won't be
 	// initialized and started.
 	// DisabledPlugins must use a fully qualified plugin URI.
@@ -104,6 +102,9 @@ type Config struct {
 	// the GRPC address (grpcAddress + ".ttrpc") and inherits GRPC's UID/GID.
 	// In version 4, the TTRPC plugin uses its own defaults independently.
 	TTRPC TTRPCConfig `toml:"ttrpc,omitempty"`
+	// Metrics and monitoring settings
+	// Deprecated: use server plugin io.containerd.server.v1.metrics
+	Metrics MetricsConfig `toml:"metrics,omitempty"`
 }
 
 // StreamProcessor provides configuration for diff content processors
@@ -291,6 +292,18 @@ func serviceMigrate(ctx context.Context, c *Config) error {
 			c.TTRPC.GID = 0
 		}
 	}
+	if c.Metrics.GRPCHistogram && c.Plugins["io.containerd.metrics.v1.grpc-prometheus"] == nil {
+		c.Plugins["io.containerd.metrics.v1.grpc-prometheus"] = map[string]any{
+			"grpc_histogram": c.Metrics.GRPCHistogram,
+		}
+		c.Metrics.GRPCHistogram = false
+	}
+	if c.Metrics.Address != "" && c.Plugins["io.containerd.server.v1.metrics"] == nil {
+		c.Plugins["io.containerd.server.v1.metrics"] = map[string]any{
+			"address": c.Metrics.Address,
+		}
+		c.Metrics.Address = ""
+	}
 	return nil
 }
 
@@ -342,7 +355,8 @@ type Debug struct {
 
 // MetricsConfig provides metrics configuration
 type MetricsConfig struct {
-	Address string `toml:"address"`
+	// Deprecated: use server plugin io.containerd.server.v1.metrics
+	Address string `toml:"address,omitempty"`
 	// Deprecated: use metrics plugin io.containerd.metrics.v1.grpc-prometheus
 	GRPCHistogram bool `toml:"grpc_histogram,omitempty"`
 }

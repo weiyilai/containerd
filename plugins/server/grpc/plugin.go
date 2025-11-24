@@ -159,7 +159,6 @@ func init() {
 				prometheusServerMetrics = p.(*grpc_prometheus.ServerMetrics)
 				streamOpts = append(streamOpts, prometheusServerMetrics.StreamServerInterceptor())
 				unaryOpts = append(unaryOpts, prometheusServerMetrics.UnaryServerInterceptor())
-				prometheusServerMetrics.InitializeMetrics(nil)
 			}
 
 			if p, err := ic.GetByID(plugins.MetricsPlugin, "grpc-otel"); err == nil {
