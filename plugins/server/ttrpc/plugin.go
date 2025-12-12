@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/containerd/containerd/v2/defaults"
 	"github.com/containerd/containerd/v2/pkg/sys"
@@ -57,6 +58,8 @@ func init() {
 		},
 		Config: &config{
 			Address: defaultAddress,
+			UID:     os.Geteuid(),
+			GID:     os.Getegid(),
 		},
 		InitFn: func(ic *plugin.InitContext) (any, error) {
 			c := ic.Config.(*config)
