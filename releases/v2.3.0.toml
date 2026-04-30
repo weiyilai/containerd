@@ -9,7 +9,7 @@ ignore_deps = [ "github.com/containerd/containerd" ]
 # previous release
 previous = "v2.2.0"
 
-pre_release = true
+pre_release = false
 
 preface = """\
 The third minor release of containerd 2.x focuses on continued stability alongside
@@ -20,8 +20,6 @@ the Kubernetes release schedule, with new minor releases about every 4 months. T
 containerd 2.3 release is also the first annual LTS (Long Term Stable) release under
 this new schedule, with support planned for at least two years. Direct upgrades
 between sequential LTS releases (e.g., 1.7 to 2.3) will be tested and supported.
-
-This is a beta release and some functionality is still under development.
 """
 
 postface = """\
